@@ -7,3 +7,6 @@ You can check out the design and download the CAD at the link below
 https://cad.onshape.com/documents/9b6b9370298a401bef62185d/w/3fc23328799e8dd97975f60a/e/fd6b8e9bd227a1a2b682e71e
 
 The code on the Teensy is an Arduino sketch, the code on the PC is Python.
+
+
+![alt text](https://github.com/wrignj08/Resource_rings/blob/main/Photos/img1.png?raw=true)
