@@ -13,6 +13,20 @@ The code on the Teensy is an Arduino sketch, the code on the PC is Python.
 ![alt text](https://github.com/wrignj08/Resource_rings/blob/main/Photos/img2.png?raw=true)
 
 
+Features:<br>
+CPU usage max core, purple on dial 1<br>
+CPU usage max core last reading, green on dial 1<br>
+CPU usage all core mean, teal on dial 1 overprints max core<br>
+CPU temp, red on dial 1<br>
+RAM usage, purple on dial 2<br>
+RAM usage last reading, green on dial 2<br>
+GPU usage, purple on dial 3<br>
+GPU usage last reading, green on dial 3<br>
+GPU temp, red on dial 3<br>
+VRAM usage, purple on dial 4<br>
+VRAM usage last reading, green dial 4<br>
+
+
 Hardware:<br>
   1 x Teensy 4.0 (probibly overkill but does a good job)<br>
   https://core-electronics.com.au/teensy-4-0.html<br>
