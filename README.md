@@ -13,16 +13,16 @@ The code on the Teensy is an Arduino sketch, the code on the PC is Python.
 ![alt text](https://github.com/wrignj08/Resource_rings/blob/main/Photos/img2.png?raw=true)
 
 
-Hardware:
-  1 x Teensy 4.0 (probibly overkill but does a good job)
-  https://core-electronics.com.au/teensy-4-0.html
-  4 x Addressable LED Ring - 16 Bit WS2812 RGB LED
-  https://core-electronics.com.au/cjmcu-16-bit-ws2812-5050-rgb-led-built-in-full-color-driving-lights-circle-development-board.html
-  6 x M3 stainless steel self tapping thread insert
-  https://www.aliexpress.com/item/32889542737.html
-  6 x M3 x 8mm bolts
-  https://www.aliexpress.com/item/1005001975621423.html
-  3D printed housing (3 files, PLA is fine)
-  https://github.com/wrignj08/Resource_rings/tree/main/CAD/3D%20printed%20STL%20files
-  Laser cut and engraved acrylic face plate
-  https://github.com/wrignj08/Resource_rings/tree/main/CAD/Later%20cut%20acrylic
+Hardware:<br>
+  1 x Teensy 4.0 (probibly overkill but does a good job)<br>
+  https://core-electronics.com.au/teensy-4-0.html<br>
+  4 x Addressable LED Ring - 16 Bit WS2812 RGB LED<br>
+  https://core-electronics.com.au/cjmcu-16-bit-ws2812-5050-rgb-led-built-in-full-color-driving-lights-circle-development-board.html<br>
+  6 x M3 stainless steel self tapping thread insert<br>
+  https://www.aliexpress.com/item/32889542737.html<br>
+  6 x M3 x 8mm bolts<br>
+  https://www.aliexpress.com/item/1005001975621423.html<br>
+  3D printed housing (3 files, PLA is fine)<br>
+  https://github.com/wrignj08/Resource_rings/tree/main/CAD/3D%20printed%20STL%20files<br>
+  Laser cut and engraved acrylic face plate<br>
+  https://github.com/wrignj08/Resource_rings/tree/main/CAD/Later%20cut%20acrylic<br>
