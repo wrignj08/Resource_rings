@@ -8,13 +8,11 @@ https://cad.onshape.com/documents/9b6b9370298a401bef62185d/w/3fc23328799e8dd9797
 
 The code on the Teensy is an Arduino sketch, the code on the PC is Python.
 
-
+<p align="center">
 ![alt text](https://github.com/wrignj08/Resource_rings/blob/main/Photos/img1.png?raw=true)
 ![alt text](https://github.com/wrignj08/Resource_rings/blob/main/Photos/img2.png?raw=true)
-![Alt Text](https://github.com/wrignj08/Resource_rings/blob/main/Photos/img3.GIF?raw=true))
-
-
-
+![Alt Text](https://github.com/wrignj08/Resource_rings/blob/main/Photos/img3.GIF?raw=true)
+</p>
 
 Features:<br>
 CPU usage max core, purple on dial 1<br>
@@ -28,7 +26,6 @@ GPU usage last reading, green on dial 3<br>
 GPU temp, red on dial 3<br>
 VRAM usage, purple on dial 4<br>
 VRAM usage last reading, green dial 4<br>
-
 
 Hardware:<br>
 1 x Teensy 4.0 (probibly overkill but does a good job)<br>
