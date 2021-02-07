@@ -61,7 +61,7 @@ void loop() {
     newData = false;
   }
 
-  if (millis() - timer > 2000) {
+  if (millis() - timer > 4000) {
     //    all_off();
     spiner_ano ();
 
@@ -113,7 +113,7 @@ void spiner_ano () {
     old_ano2 = old_ano1;
     old_ano1 = LED;
 
-    delay(20);
+    delay(30);
     FastLED.show();
 
   }

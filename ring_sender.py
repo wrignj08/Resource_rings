@@ -6,6 +6,7 @@ import serial.tools.list_ports
 import psutil
 import subprocess as sp
 
+teensy_serial_ID = '8434600'
 
 leds_per_ring = 16
 
@@ -65,10 +66,20 @@ def get_CPU_temp():
     return temp_pct
     
 # loop forever
-while 1 != 2:
+while True:
+    ports = serial.tools.list_ports.comports(include_links=False)
+    port_num = 0
+    for port in ports:
+        if teensy_serial_ID in port.hwid:
+            teensy_port = port_num
+
+        
+        port_num += 1
+        
     try:
         ports = serial.tools.list_ports.comports(include_links=False)
-        arduino = serial.Serial(ports[1].device, 9600, timeout=.1)
+        
+        arduino = serial.Serial(ports[teensy_port].device, 9600, timeout=.1)
         
         total_CPU = str(round(leds_per_ring*get_total_cpu()))
         max_CPU_core = str(round(leds_per_ring*get_max_CPU_core()))
