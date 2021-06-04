@@ -63,10 +63,16 @@ def get_max_CPU_core():
     return max_CPU
 
 def get_CPU_temp():
-    CPU_temp = psutil.sensors_temperatures()['coretemp'][0].current
+#         CPU_temp = psutil.sensors_temperatures()['coretemp'][0].current
+        
+    with open(r"/sys/class/thermal/thermal_zone0/temp") as File:
+        CPU_temp = float(File.readline())/ 1000
+            
+
     temp_pct = (CPU_temp-CPU_min_temp)/(CPU_max_temp-CPU_min_temp)
     if temp_pct < 0:
         temp_pct = 0
+    
     return temp_pct
     
 # loop forever
@@ -108,5 +114,3 @@ while True:
     except (OSError,IndexError):
         time.sleep(1)
         print('retry')
-    
-    
