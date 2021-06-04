@@ -23,6 +23,8 @@ def get_GPU_temp():
     GPU_temp_info = _output_to_list(sp.check_output(COMMAND.split()))[1:]
     GPU_temp = [int(x.split()[0]) for i, x in enumerate(GPU_temp_info)]
     temp_pct = (GPU_temp[0]-GPU_min_temp)/(GPU_max_temp-GPU_min_temp)
+    if temp_pct < 0:
+        temp_pct = 0
     return temp_pct
 
 def get_GPU_mem():
@@ -63,16 +65,18 @@ def get_max_CPU_core():
 def get_CPU_temp():
     CPU_temp = psutil.sensors_temperatures()['coretemp'][0].current
     temp_pct = (CPU_temp-CPU_min_temp)/(CPU_max_temp-CPU_min_temp)
+    if temp_pct < 0:
+        temp_pct = 0
     return temp_pct
     
 # loop forever
+
 while True:
     ports = serial.tools.list_ports.comports(include_links=False)
     port_num = 0
     for port in ports:
         if teensy_serial_ID in port.hwid:
             teensy_port = port_num
-
         
         port_num += 1
         
@@ -92,16 +96,17 @@ while True:
         GPU_temp = str(round(leds_per_ring*get_GPU_temp()))
 
         arduino.write(str.encode('<'+max_CPU_core+','+total_CPU+','+RAM+','+GPU_util+','+GPU_RAM+','+GPU_temp+','+CPU_temp+'>'))
-        print('max core =',max_CPU_core)
-        print('total CPU =',total_CPU)
-        print('RAM =',RAM)
-        print('GPU =',GPU_util)
-        print('VRM =',GPU_RAM)
-        print('GPU = ',GPU_RAM)
-        print('CPU = ',CPU_temp)
+        print('max core =',max_CPU_core, '\n',
+             'total CPU =',total_CPU,'\n',
+              'RAM =',RAM, '\n',
+              'GPU =',GPU_util, '\n',
+              'VRM =',GPU_RAM, '\n',
+              'GPU temp =',GPU_temp, '\n',
+              'CPU temp =',CPU_temp, '\n')
         time.sleep(0.5)
         
     except (OSError,IndexError):
         time.sleep(1)
         print('retry')
+    
     
