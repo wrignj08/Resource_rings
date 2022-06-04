@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
 import os
 import sys
 import time
@@ -5,6 +11,10 @@ import serial
 import serial.tools.list_ports
 import psutil
 import subprocess as sp
+
+
+# In[2]:
+
 
 teensy_serial_ID = '8434600'
 
@@ -15,6 +25,10 @@ GPU_min_temp = 50
 
 CPU_max_temp = 90
 CPU_min_temp = 38
+
+
+# In[50]:
+
 
 def get_GPU_temp():
     _output_to_list = lambda x: x.decode('ascii').split('\n')[:-1]
@@ -65,8 +79,9 @@ def get_max_CPU_core():
 def get_CPU_temp():
 #         CPU_temp = psutil.sensors_temperatures()['coretemp'][0].current
         
-    with open(r"/sys/class/thermal/thermal_zone0/temp") as File:
-        CPU_temp = float(File.readline())/ 1000
+#     with open(r"/sys/class/thermal/thermal_zone0/temp") as File:
+#         CPU_temp = float(File.readline())/ 1000
+    CPU_temp = psutil.sensors_temperatures()['k10temp'][1].current
             
 
     temp_pct = (CPU_temp-CPU_min_temp)/(CPU_max_temp-CPU_min_temp)
@@ -75,7 +90,10 @@ def get_CPU_temp():
     
     return temp_pct
     
-# loop forever
+
+
+# In[ ]:
+
 
 while True:
     ports = serial.tools.list_ports.comports(include_links=False)
@@ -88,22 +106,18 @@ while True:
         
     try:
         ports = serial.tools.list_ports.comports(include_links=False)
-        
         arduino = serial.Serial(ports[teensy_port].device, 9600, timeout=.1)
-        
         total_CPU = str(round(leds_per_ring*get_total_cpu()))
         max_CPU_core = str(round(leds_per_ring*get_max_CPU_core()))
         CPU_temp = str(round(leds_per_ring*get_CPU_temp()))
-        
         RAM = str(round(leds_per_ring*get_ram()))
         
         GPU_RAM = str(round(leds_per_ring*get_GPU_mem()))
         GPU_util = str(round(leds_per_ring*get_gpu_utilization()))
         GPU_temp = str(round(leds_per_ring*get_GPU_temp()))
-
         arduino.write(str.encode('<'+max_CPU_core+','+total_CPU+','+RAM+','+GPU_util+','+GPU_RAM+','+GPU_temp+','+CPU_temp+'>'))
-        print('max core =',max_CPU_core, '\n',
-             'total CPU =',total_CPU,'\n',
+        print('Max core =',max_CPU_core, '\n',
+             'Total CPU =',total_CPU,'\n',
               'RAM =',RAM, '\n',
               'GPU =',GPU_util, '\n',
               'VRM =',GPU_RAM, '\n',
@@ -111,6 +125,14 @@ while True:
               'CPU temp =',CPU_temp, '\n')
         time.sleep(0.5)
         
-    except (OSError,IndexError):
+    except Exception as e:
+        print(e)
         time.sleep(1)
         print('retry')
+
+
+# In[ ]:
+
+
+
+
