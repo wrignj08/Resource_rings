@@ -1,138 +1,147 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
-import os
-import sys
 import time
 import serial
-import serial.tools.list_ports
 import psutil
 import subprocess as sp
+from serial.tools.list_ports import comports
+from typing import List
 
-
-# In[2]:
-
-
-teensy_serial_ID = '8434600'
-
+# Constants
+teensy_serial_id = "8434600"
 leds_per_ring = 16
-
-GPU_max_temp = 90
-GPU_min_temp = 50
-
-CPU_max_temp = 90
-CPU_min_temp = 38
+gpu_max_temperature = 90
+gpu_min_temperature = 50
+cpu_max_temperature = 90
+cpu_min_temperature = 38
 
 
-# In[50]:
+# Utility function
+def convert_output_to_list(output: bytes) -> List[str]:
+    """
+    Converts the output from bytes to list of strings.
+    :param output: The output in bytes.
+    :return: List of strings.
+    """
+    return output.decode("ascii").split("\n")[:-1]
 
 
-def get_GPU_temp():
-    _output_to_list = lambda x: x.decode('ascii').split('\n')[:-1]
+# Functions
+def get_gpu_temperature() -> float:
+    """
+    Gets the current GPU temperature and calculates the percentage it represents
+    of the max temperature. :return: The percentage of the max temperature that
+    the current temperature represents.
+    """
+    command = "nvidia-smi --query-gpu=temperature.gpu --format=csv"
+    gpu_temp_info = convert_output_to_list(sp.check_output(command.split()))[1:]
+    gpu_temperature = int(gpu_temp_info[0].split()[0])
+    temperature_percentage = (gpu_temperature - gpu_min_temperature) / (
+        gpu_max_temperature - gpu_min_temperature
+    )
+    return max(0, temperature_percentage)
 
-    COMMAND = "nvidia-smi --query-gpu=temperature.gpu --format=csv"
-    GPU_temp_info = _output_to_list(sp.check_output(COMMAND.split()))[1:]
-    GPU_temp = [int(x.split()[0]) for i, x in enumerate(GPU_temp_info)]
-    temp_pct = (GPU_temp[0]-GPU_min_temp)/(GPU_max_temp-GPU_min_temp)
-    if temp_pct < 0:
-        temp_pct = 0
-    return temp_pct
 
-def get_GPU_mem():
-    _output_to_list = lambda x: x.decode('ascii').split('\n')[:-1]
+def get_gpu_memory_usage() -> float:
+    """
+    Calculates the percentage of GPU memory that is currently used.
+    :return: The percentage of GPU memory that is currently used.
+    """
+    command = "nvidia-smi --query-gpu=memory.used --format=csv"
+    memory_used_info = convert_output_to_list(sp.check_output(command.split()))[1:]
+    memory_used = int(memory_used_info[0].split()[0])
 
-    COMMAND = "nvidia-smi --query-gpu=memory.used --format=csv"
-    memory_used_info = _output_to_list(sp.check_output(COMMAND.split()))[1:]
-    memory_used_values = [int(x.split()[0]) for i, x in enumerate(memory_used_info)]
+    command = "nvidia-smi --query-gpu=memory.total --format=csv"
+    memory_total_info = convert_output_to_list(sp.check_output(command.split()))[1:]
+    memory_total = int(memory_total_info[0].split()[0])
 
-    COMMAND = "nvidia-smi --query-gpu=memory.total --format=csv"
-    memory_total_info = _output_to_list(sp.check_output(COMMAND.split()))[1:]
-    memory_total_values = [int(x.split()[0]) for i, x in enumerate(memory_total_info)]
+    percent_used = memory_used / memory_total
+    return percent_used
 
-    pct_used = memory_used_values[0]/memory_total_values[0]
-    return pct_used
 
-def get_gpu_utilization():
-    _output_to_list = lambda x: x.decode('ascii').split('\n')[:-1]
-    COMMAND = "nvidia-smi --query-gpu=utilization.gpu --format=csv"
-    utilization_info = _output_to_list(sp.check_output(COMMAND.split()))[1:]
-    utilization_values = [int(x.split()[0]) for i, x in enumerate(utilization_info)]
-    
-    gpu_utilization = float(utilization_info[0].split(' %')[0])/100
+def get_gpu_utilization() -> float:
+    """
+    Gets the current GPU utilization.
+    :return: The current GPU utilization.
+    """
+    command = "nvidia-smi --query-gpu=utilization.gpu --format=csv"
+    utilization_info = convert_output_to_list(sp.check_output(command.split()))[1:]
+    gpu_utilization = float(utilization_info[0].split(" %")[0]) / 100
     return gpu_utilization
 
-def get_ram():
-    ram = dict(psutil.virtual_memory()._asdict())['percent']/100
-    return ram
 
-def get_total_cpu():
-    total_cpu = psutil.cpu_percent(interval=.1)/100
-    return total_cpu
-
-def get_max_CPU_core():
-    max_CPU = max(psutil.cpu_percent(interval=.1, percpu=True))/100
-    return max_CPU
-
-def get_CPU_temp():
-#         CPU_temp = psutil.sensors_temperatures()['coretemp'][0].current
-        
-#     with open(r"/sys/class/thermal/thermal_zone0/temp") as File:
-#         CPU_temp = float(File.readline())/ 1000
-    CPU_temp = psutil.sensors_temperatures()['k10temp'][1].current
-            
-
-    temp_pct = (CPU_temp-CPU_min_temp)/(CPU_max_temp-CPU_min_temp)
-    if temp_pct < 0:
-        temp_pct = 0
-    
-    return temp_pct
-    
+def get_ram_usage() -> float:
+    """
+    Gets the percentage of virtual memory that is currently used.
+    :return: The percentage of virtual memory that is currently used.
+    """
+    ram_usage = psutil.virtual_memory().percent / 100
+    return ram_usage
 
 
-# In[ ]:
+def get_total_cpu_usage() -> float:
+    """
+    Gets the percentage of CPU that is currently being used.
+    :return: The percentage of CPU that is currently being used.
+    """
+    total_cpu_usage = psutil.cpu_percent(interval=0.1) / 100
+    return total_cpu_usage
+
+
+def get_max_cpu_core_usage() -> float:
+    """
+    Gets the maximum CPU core utilization.
+    :return: The maximum CPU core utilization.
+    """
+    max_cpu_usage = max(psutil.cpu_percent(interval=0.1, percpu=True)) / 100.0  # type: ignore  # noqa: E501
+    return max_cpu_usage
+
+
+def get_cpu_temperature() -> float:
+    """
+    Gets the current CPU temperature and calculates the percentage it represents
+    of the max temperature. :return: The percentage of the max temperature that
+    the current temperature represents.
+    """
+    cpu_temperature = psutil.sensors_temperatures()["k10temp"][1].current
+    temperature_percentage = (cpu_temperature - cpu_min_temperature) / (
+        cpu_max_temperature - cpu_min_temperature
+    )
+    return max(0, temperature_percentage)
 
 
 while True:
-    ports = serial.tools.list_ports.comports(include_links=False)
-    port_num = 0
-    for port in ports:
-        if teensy_serial_ID in port.hwid:
-            teensy_port = port_num
-        
-        port_num += 1
-        
     try:
-        ports = serial.tools.list_ports.comports(include_links=False)
-        arduino = serial.Serial(ports[teensy_port].device, 9600, timeout=.1)
-        total_CPU = str(round(leds_per_ring*get_total_cpu()))
-        max_CPU_core = str(round(leds_per_ring*get_max_CPU_core()))
-        CPU_temp = str(round(leds_per_ring*get_CPU_temp()))
-        RAM = str(round(leds_per_ring*get_ram()))
-        
-        GPU_RAM = str(round(leds_per_ring*get_GPU_mem()))
-        GPU_util = str(round(leds_per_ring*get_gpu_utilization()))
-        GPU_temp = str(round(leds_per_ring*get_GPU_temp()))
-        arduino.write(str.encode('<'+max_CPU_core+','+total_CPU+','+RAM+','+GPU_util+','+GPU_RAM+','+GPU_temp+','+CPU_temp+'>'))
-        print('Max core =',max_CPU_core, '\n',
-             'Total CPU =',total_CPU,'\n',
-              'RAM =',RAM, '\n',
-              'GPU =',GPU_util, '\n',
-              'VRM =',GPU_RAM, '\n',
-              'GPU temp =',GPU_temp, '\n',
-              'CPU temp =',CPU_temp, '\n')
-        time.sleep(0.5)
-        
+        ports = comports(include_links=False)
+        teensy_port = next(
+            (i for i, port in enumerate(ports) if teensy_serial_id in port.hwid), None
+        )
+
+        if teensy_port is not None:
+            with serial.Serial(ports[teensy_port].device, 9600, timeout=0.1) as arduino:
+                total_cpu_usage = str(round(leds_per_ring * get_total_cpu_usage()))
+                max_cpu_core_usage = str(
+                    round(leds_per_ring * get_max_cpu_core_usage())
+                )
+                cpu_temperature = str(round(leds_per_ring * get_cpu_temperature()))
+                ram_usage = str(round(leds_per_ring * get_ram_usage()))
+                gpu_memory_usage = str(round(leds_per_ring * get_gpu_memory_usage()))
+                gpu_utilization = str(round(leds_per_ring * get_gpu_utilization()))
+                gpu_temperature = str(round(leds_per_ring * get_gpu_temperature()))
+
+                arduino.write(
+                    f"<{max_cpu_core_usage},{total_cpu_usage},{ram_usage},{gpu_utilization},{gpu_memory_usage},{gpu_temperature},{cpu_temperature}>".encode()
+                )
+
+                print(
+                    f"Max core usage = {max_cpu_core_usage}\n"
+                    f"Total CPU usage = {total_cpu_usage}\n"
+                    f"RAM usage = {ram_usage}\n"
+                    f"GPU usage = {gpu_utilization}\n"
+                    f"GPU memory usage = {gpu_memory_usage}\n"
+                    f"GPU temperature = {gpu_temperature}\n"
+                    f"CPU temperature = {cpu_temperature}\n"
+                )
+                time.sleep(0.5)
     except Exception as e:
         print(e)
         time.sleep(1)
-        print('retry')
-
-
-# In[ ]:
-
-
-
-
+        print("retry")
