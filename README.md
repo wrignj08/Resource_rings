@@ -8,6 +8,8 @@ https://cad.onshape.com/documents/9b6b9370298a401bef62185d/w/3fc23328799e8dd9797
 
 The code on the Teensy is an Arduino sketch, the code on the PC is Python.
 
+The Python side is managed with [uv](https://docs.astral.sh/uv/). Run `uv sync` to create the venv, then `./Run_rings.sh` to start the sender.
+
 <p align="center">
   <img src="https://github.com/wrignj08/Resource_rings/blob/main/Photos/img1.png?raw=true">
   <img  src="https://github.com/wrignj08/Resource_rings/blob/main/Photos/img2.png?raw=tru">

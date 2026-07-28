@@ -1,20 +1,13 @@
 #!/bin/bash
 
-# Name of the conda environment
-CONDA_ENV_NAME="ard"
+# Run from the repo root so the relative venv path works from any directory
+cd "$(dirname "$0")" || exit 1
 
 # Path to your python script
 PYTHON_SCRIPT="ring_sender.py"
 
-# Activate the conda environment
-eval "$(conda shell.bash hook)"
-conda activate $CONDA_ENV_NAME
+# Interpreter from the uv managed venv (create it with: uv sync)
+PYTHON_PATH=".venv/bin/python"
 
 # Run the Python script
-python $PYTHON_SCRIPT
-
-# Deactivate the conda environment
-conda deactivate
-
-
-
+$PYTHON_PATH $PYTHON_SCRIPT
